@@ -1,0 +1,28 @@
+{
+  "name": "suplementos-bot",
+  "version": "1.0.0",
+  "description": "Scraper de precios para suplementoscolomayorista.com.ar",
+  "main": "src/scraper.js",
+  "scripts": {
+    "scrape": "node src/scraper.js",
+    "dev": "nodemon src/scraper.js",
+    "compare": "node src/comparator.js",
+    "check": "node src/run.js",
+    "whatsapp": "node src/whatsapp.js",
+    "whatsapp:login": "node src/whatsapp-login.js",
+    "whatsapp:test": "node src/whatsapp-test.js",
+    "run:all": "node src/run.js",
+    "prepare-price-test": "node src/prepare-price-test.js"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
+    "dotenv": "^17.2.1",
+    "@whiskeysockets/baileys": "6.7.23",
+    "pino": "^9.6.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

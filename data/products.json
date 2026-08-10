@@ -1,0 +1,89 @@
+{
+  "scrapedAt": "2026-08-10T15:30:57.442Z",
+  "source": "https://suplementoscolomayorista.com.ar",
+  "monitoredCount": 10,
+  "foundCount": 10,
+  "missing": [],
+  "products": [
+    {
+      "objetivo": "COLAGENO HIDROLIZADO X210G LIMON",
+      "brand": "STAR NUTRITION",
+      "nombre": "COLAGENO HIDROLIZADO X210G LIMON – STAR NUTRITION",
+      "precio": 14150,
+      "url": "https://suplementoscolomayorista.com.ar/producto/colageno-hidrolizado-x210g-limon-star-nutrition/",
+      "sku": "COL-STX210"
+    },
+    {
+      "objetivo": "CREATINA DOY PACK 300GR - STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "CREATINA DOY PACK 300GR- STAR NUTRITION",
+      "precio": 18990,
+      "url": "https://suplementoscolomayorista.com.ar/producto/creatina-doy-pack-300g-star-nutrition/",
+      "sku": "CDPSN"
+    },
+    {
+      "objetivo": "CREATINA 1 KG STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "CREATINA 1 KG STAR NUTRITION",
+      "precio": 58990,
+      "url": "https://suplementoscolomayorista.com.ar/producto/creatina-1-kg-star-nutrition/",
+      "sku": "CST1K"
+    },
+    {
+      "objetivo": "HYDROPLUS ENDURANCE X700G – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "HYDROPLUS ENDURANCE X700G – STAR NUTRITION",
+      "precio": 13590,
+      "url": "https://suplementoscolomayorista.com.ar/producto/hydroplus-endurance-x700g-star-nutrition/",
+      "sku": "N/D"
+    },
+    {
+      "objetivo": "MULTIVITAMINICO ALL IN ONE X60 CAPS – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "MULTIVITAMINICO ALL IN ONE X60 CAPS – STAR NUTRITION",
+      "precio": 15389,
+      "url": "https://suplementoscolomayorista.com.ar/producto/multivitaminico-all-in-one-x60-caps-star-nutrition/",
+      "sku": "MTVAIO-STR"
+    },
+    {
+      "objetivo": "THERMO FUEL X120 CAPS - STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "THERMO FUEL X120 CAPS – STAR NUTRITION",
+      "precio": 15990,
+      "url": "https://suplementoscolomayorista.com.ar/producto/thermo-fuel-x120-caps-star-nutrition/",
+      "sku": "THERMO-120ST"
+    },
+    {
+      "objetivo": "CITRATRO DE MAGNESIO X60CAP – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "CITRATRO DE MAGNESIO X60CAP – STAR NUTRITION",
+      "precio": 11490,
+      "url": "https://suplementoscolomayorista.com.ar/producto/citratro-de-magnesio-x60cap-star-nutrition/",
+      "sku": "CMST60"
+    },
+    {
+      "objetivo": "OMEGA 3 FISH OIL X60CAP - STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "OMEGA 3 FISH OIL X60CAP – STAR NUTRITION",
+      "precio": 23990,
+      "url": "https://suplementoscolomayorista.com.ar/producto/omega-3-fish-oil-x60cap-star-nutrition/",
+      "sku": "OMG3-STR"
+    },
+    {
+      "objetivo": "PUMP V8 X285G – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "PUMP V8 X285G – STAR NUTRITION",
+      "precio": 24290,
+      "url": "https://suplementoscolomayorista.com.ar/producto/pump-v8-x285g-star-nutrition/",
+      "sku": "N/D"
+    },
+    {
+      "objetivo": "WHEY DOY PACK STAR 2LB- STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "nombre": "WHEY DOY PACK STAR 2LB- STAR NUTRITION",
+      "precio": 59990,
+      "url": "https://suplementoscolomayorista.com.ar/producto/pre-venta-whey-doy-pack-star-2lb-star-nutrition/",
+      "sku": "WDPS"
+    }
+  ]
+}

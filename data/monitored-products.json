@@ -1,0 +1,85 @@
+{
+  "products": [
+    {
+      "name": "COLAGENO HIDROLIZADO X210G LIMON",
+      "brand": "STAR NUTRITION",
+      "categoryUrl": "https://suplementoscolomayorista.com.ar/categoria-producto/colageno-resveratrol/",
+      "aliases": [
+        "COLAGENO HIDROLIZADO X210G LIMON – STAR NUTRITION",
+        "COLAGENO HIDROLIZADO X210G LIMON - STAR NUTRITION"
+      ]
+    },
+    {
+      "name": "CREATINA DOY PACK 300GR - STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "categoryUrl": "https://suplementoscolomayorista.com.ar/categoria-producto/creatinas/",
+      "aliases": [
+        "CREATINA MONOHIDRATO DOY PACK X300 GR",
+        "CREATINA DOY PACK 300GR- STAR NUTRITION"
+      ]
+    },
+    {
+      "name": "CREATINA 1 KG STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "categoryUrl": "https://suplementoscolomayorista.com.ar/categoria-producto/creatinas/",
+      "aliases": [
+        "CREATINA 1 KG"
+      ]
+    },
+    {
+      "name": "HYDROPLUS ENDURANCE X700G – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "categoryUrl": "https://suplementoscolomayorista.com.ar/categoria-producto/hidratantes-y-geles/",
+      "aliases": [
+        "HYDROPLUS ENDURANCE X700G - STAR NUTRITION",
+        "HYDROPLUS ENDURANCE X700G"
+      ]
+    },
+    {
+      "name": "CITRATRO DE MAGNESIO X60CAP – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "aliases": [
+        "CITRATRO DE MAGNESIO X60CAP"
+      ]
+    },
+    {
+      "name": "MULTIVITAMINICO ALL IN ONE X60 CAPS – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "aliases": [
+        "MULTIVITAMINICO ALL IN ONE X60 CAPS"
+      ]
+    },
+    {
+      "name": "OMEGA 3 FISH OIL X60CAP - STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "aliases": [
+        "OMEGA 3 FISH OIL X60CAP"
+      ]
+    },
+    {
+      "name": "PUMP V8 X285G – STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "categoryUrl": "https://suplementoscolomayorista.com.ar/categoria-producto/pre-entreno/",
+      "aliases": [
+        "PUMP V8 X285G - STAR NUTRITION",
+        "PUMP V8 X285G"
+      ]
+    },
+    {
+      "name": "WHEY DOY PACK STAR 2LB- STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "categoryUrl": "https://suplementoscolomayorista.com.ar/categoria-producto/proteinas/",
+      "aliases": [
+        "WHEY DOY PACK STAR 2LB - STAR NUTRITION",
+        "WHEY DOY PACK STAR 2LB"
+      ]
+    },
+    {
+      "name": "THERMO FUEL X120 CAPS - STAR NUTRITION",
+      "brand": "STAR NUTRITION",
+      "aliases": [
+        "THERMO FUEL X120 CAPS"
+      ]
+    }
+  ]
+}
