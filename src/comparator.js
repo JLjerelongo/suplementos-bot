@@ -16,7 +16,7 @@ function redondear(numero, decimales = 2) {
 async function leerJSON(filePath) {
   try {
     const raw = await fs.readFile(filePath, "utf8");
-    return JSON.parse(raw);
+    return JSON.parse(raw.replace(/^\uFEFF/, ""));
   } catch (error) {
     if (error.code === "ENOENT") return null;
     throw error;
