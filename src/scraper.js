@@ -36,6 +36,8 @@ function normalizarPrecio(texto) {
   const matches = texto.match(/\$?\s*[\d.]+(?:,\d+)?/g);
   if (!matches || matches.length === 0) return null;
 
+  // WooCommerce puede mostrar precio regular + rebajado.
+  // Tomamos el último valor numérico mostrado.
   const ultimo = matches[matches.length - 1];
 
   const limpio = ultimo
@@ -45,7 +47,10 @@ function normalizarPrecio(texto) {
     .replace(",", ".");
 
   const numero = Number(limpio);
-  return Number.isFinite(numero) ? numero : null;
+
+  // Un precio 0 no es válido para este bot: suele indicar que el HTML
+  // cambió o que el producto es variable/sin precio en el listado.
+  return Number.isFinite(numero) && numero > 0 ? numero : null;
 }
 
 function productoCoincide(nombreWeb, objetivo) {
@@ -56,12 +61,73 @@ function productoCoincide(nombreWeb, objetivo) {
     ...(objetivo.aliases || []),
   ].map(normalizarTexto);
 
-  // IMPORTANTE:
-  // No usamos includes() para identificar productos porque podría confundir
-  // "CREATINA ... 300G" con "CAJA CERRADA ... 14U".
-  // Solamente aceptamos coincidencia exacta con el nombre configurado
-  // o con uno de sus aliases.
   return nombresValidos.includes(web);
+}
+
+function extraerPrecioDeProducto($) {
+  // 1) Precio visible de la ficha WooCommerce.
+  const selectores = [
+    ".summary .price",
+    ".product .summary .price",
+    ".woocommerce-variation-price .price",
+    ".price",
+  ];
+
+  for (const selector of selectores) {
+    const texto = $(selector).first().text().trim();
+    const precio = normalizarPrecio(texto);
+    if (precio !== null) return precio;
+  }
+
+  // 2) Meta estándar de WooCommerce.
+  const metaPrice = $('meta[itemprop="price"]').attr("content");
+  const precioMeta = normalizarPrecio(metaPrice);
+  if (precioMeta !== null) return precioMeta;
+
+  // 3) JSON-LD: WooCommerce suele publicar offers.price.
+  let precioJsonLd = null;
+
+  $('script[type="application/ld+json"]').each((_, el) => {
+    if (precioJsonLd !== null) return;
+
+    try {
+      const raw = $(el).contents().text();
+      const data = JSON.parse(raw);
+
+      const recorrer = (valor) => {
+        if (!valor || precioJsonLd !== null) return;
+
+        if (Array.isArray(valor)) {
+          valor.forEach(recorrer);
+          return;
+        }
+
+        if (typeof valor !== "object") return;
+
+        if (valor.offers) {
+          const offers = Array.isArray(valor.offers)
+            ? valor.offers
+            : [valor.offers];
+
+          for (const offer of offers) {
+            const precio = normalizarPrecio(String(offer?.price ?? ""));
+            if (precio !== null) {
+              precioJsonLd = precio;
+              return;
+            }
+          }
+        }
+
+        Object.values(valor).forEach(recorrer);
+      };
+
+      recorrer(data);
+    } catch {
+      // Ignoramos JSON-LD inválido y seguimos con otros métodos.
+    }
+  });
+
+  return precioJsonLd;
 }
 
 function extraerProductosDeListado(html) {
@@ -81,11 +147,13 @@ function extraerProductosDeListado(html) {
       item.find("a.woocommerce-LoopProduct-link, a").first().attr("href") ||
       null;
 
+    if (!nombre || !url) return;
+
     const precioTexto = item.find(".price").first().text().trim();
     const precio = normalizarPrecio(precioTexto);
 
-    if (!nombre || !url || precio === null) return;
-
+    // Guardamos el producto aunque el precio del listado no pueda leerse.
+    // Luego intentamos obtenerlo desde la ficha individual.
     productos.push({
       nombre,
       precio,
@@ -125,7 +193,7 @@ function detectarSiguientePagina(html, paginaActual) {
 
 async function cargarConfiguracion() {
   const raw = await fs.readFile(CONFIG_PATH, "utf8");
-  const config = JSON.parse(raw);
+  const config = JSON.parse(raw.replace(/^\uFEFF/, ""));
 
   if (!Array.isArray(config.products) || config.products.length === 0) {
     throw new Error("data/monitored-products.json no contiene productos.");
@@ -136,15 +204,52 @@ async function cargarConfiguracion() {
 
 async function extraerProductosDePagina(url) {
   const response = await http.get(url);
-  return extraerProductosDeListado(response.data);
+  return {
+    html: response.data,
+    productos: extraerProductosDeListado(response.data),
+  };
+}
+
+async function obtenerPrecioDeFicha(url) {
+  try {
+    const response = await http.get(url);
+    const $ = cheerio.load(response.data);
+
+    const precio = extraerPrecioDeProducto($);
+    return precio;
+  } catch {
+    return null;
+  }
+}
+
+async function resolverProducto(candidato, objetivo) {
+  let precio = candidato.precio;
+
+  if (precio === null) {
+    console.log(`  ↳ Precio no legible en listado. Consultando ficha: ${candidato.url}`);
+    precio = await obtenerPrecioDeFicha(candidato.url);
+  }
+
+  if (precio === null) {
+    throw new Error(
+      `No se pudo obtener un precio válido para "${objetivo.name}" desde el listado ni desde su ficha.`
+    );
+  }
+
+  return {
+    objetivo: objetivo.name,
+    brand: objetivo.brand,
+    nombre: candidato.nombre,
+    precio,
+    url: candidato.url,
+    sku: null,
+  };
 }
 
 async function encontrarProductosMonitoreados(objetivos) {
   const encontrados = [];
   const encontradosKeys = new Set();
 
-  // Agrupamos por URL de categoría. Para productos con categoryUrl,
-  // solamente consultamos esa categoría.
   const grupos = new Map();
 
   for (const objetivo of objetivos) {
@@ -154,6 +259,7 @@ async function encontrarProductosMonitoreados(objetivos) {
     grupos.get(origen).push(objetivo);
   }
 
+  // Primero buscamos en categorías/listados, como hasta ahora.
   for (const [origen, objetivosGrupo] of grupos.entries()) {
     const objetivosPendientes = new Map(
       objetivosGrupo.map((o) => [o.name, o])
@@ -168,10 +274,9 @@ async function encontrarProductosMonitoreados(objetivos) {
 
       console.log(`→ Revisando: ${url}`);
 
-      const productos = await extraerProductosDePagina(url);
+      const { html, productos } = await extraerProductosDePagina(url);
 
       for (const [nombreObjetivo, objetivo] of objetivosPendientes) {
-        // Coincidencia exacta o por alias. Nunca por substring.
         const candidato = productos.find((producto) =>
           productoCoincide(producto.nombre, objetivo)
         );
@@ -182,15 +287,7 @@ async function encontrarProductosMonitoreados(objetivos) {
 
         if (!encontradosKeys.has(key)) {
           encontradosKeys.add(key);
-
-          encontrados.push({
-            objetivo: objetivo.name,
-            brand: objetivo.brand,
-            nombre: candidato.nombre,
-            precio: candidato.precio,
-            url: candidato.url,
-            sku: null,
-          });
+          encontrados.push(await resolverProducto(candidato, objetivo));
         }
 
         objetivosPendientes.delete(nombreObjetivo);
@@ -198,10 +295,7 @@ async function encontrarProductosMonitoreados(objetivos) {
 
       if (objetivosPendientes.size === 0) break;
 
-      const siguiente = detectarSiguientePagina(
-        (await http.get(url)).data,
-        pagina
-      );
+      const siguiente = detectarSiguientePagina(html, pagina);
 
       if (!siguiente || siguiente === url) break;
 
@@ -209,6 +303,52 @@ async function encontrarProductosMonitoreados(objetivos) {
       pagina += 1;
 
       await dormir(700);
+    }
+  }
+
+  // Respaldo: si un producto tiene productUrl, lo consultamos directamente.
+  // Esto cubre productos que dejaron de aparecer en una categoría/listado.
+  for (const objetivo of objetivos) {
+    const yaEncontrado = encontrados.some(
+      (producto) => producto.objetivo === objetivo.name
+    );
+
+    if (yaEncontrado || !objetivo.productUrl) continue;
+
+    console.log(`→ Respaldo por ficha directa: ${objetivo.productUrl}`);
+
+    try {
+      const response = await http.get(objetivo.productUrl);
+      const $ = cheerio.load(response.data);
+
+      const nombre =
+        $(".product_title").first().text().trim() ||
+        $(".entry-title").first().text().trim() ||
+        objetivo.name;
+
+      const precio = extraerPrecioDeProducto($);
+
+      if (precio === null) {
+        throw new Error("precio no encontrado");
+      }
+
+      const key = `${objetivo.name}|${objetivo.productUrl}`;
+
+      if (!encontradosKeys.has(key)) {
+        encontradosKeys.add(key);
+        encontrados.push({
+          objetivo: objetivo.name,
+          brand: objetivo.brand,
+          nombre,
+          precio,
+          url: objetivo.productUrl,
+          sku: null,
+        });
+      }
+    } catch (error) {
+      console.log(
+        `  ⚠ No se pudo resolver ${objetivo.name} por ficha directa: ${error.message}`
+      );
     }
   }
 
